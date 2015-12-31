@@ -41,7 +41,7 @@ else:
 
 # Run the command that prints the list of commited files that are modified:
 #       git status --porcelain | grep " M" | cut -d" " -f3
-gitSts  = Popen(["git", "status", "--porcelain"], stdout =PIPE) # TODO agarrar la stderr y buscar por is not a git repository
+gitSts  = Popen(["git", "status", "--porcelain"], stdout =PIPE)
 pending = Popen(["grep"," M"], stdin =gitSts.stdout, stdout=PIPE)
 pending = Popen(["cut", "-d", " ", "-f3"], stdin =pending.stdout, stdout=PIPE)
 
