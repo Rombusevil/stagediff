@@ -3,20 +3,20 @@
 __author__ = 'Iber Parodi Siri'
 
 """
-    This file is part of gg.
+    This file is part of stagediff.
 
-    gg is free software: you can redistribute it and/or modify
+    stagediff is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    gg is distributed in the hope that it will be useful,
+    stagediff is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with gg.  If not, see <http://www.gnu.org/licenses/>.
+    along with stagediff.  If not, see <http://www.gnu.org/licenses/>.
 """
 import sys, os
 from picker.picker import *
@@ -27,8 +27,8 @@ if len(args) is not 2:
     print("")
     print("Supply path of git project")
     print("Examples: ")
-    print("  gg .")
-    print("  gg /home/user/proj")
+    print("  stagediff .")
+    print("  stagediff /home/user/proj")
     print("")
     sys.exit()
 
