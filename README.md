@@ -11,6 +11,7 @@ It let's you review the changes using difftool, select files for staging and com
 ### Requirements:
 * Python2.7
 * "git d" aliased to difftool.
+* Linux (don't know/care if this works on windows).
 
 ### difftool
 I like to use vimdiff as my difftool. 
