@@ -3,6 +3,11 @@ Git utility to diff-add-commit faster
 
 ![alt tag](https://github.com/Rombusevil/gg/blob/master/docs/gg_screenshot.png)
 
+### Clone repo
+`git clone https://github.com/Rombusevil/stagediff.git --recursive`
+
+don't forget --recursive flag to pull the submodule.
+
 ### Description
 stagediff will list all your git commited files that have modifications not staged for commit yet.
 
