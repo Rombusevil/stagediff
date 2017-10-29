@@ -18,10 +18,12 @@
 """
 import sys
 import os
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, STDOUT
 from picker.picker import *
 
 __author__ = 'Iber Parodi Siri'
+VERSION = "1.0.1"
+VERSION_DATE = "October 2017"
 
 
 def change_dir(path):
@@ -33,8 +35,15 @@ def change_dir(path):
 
 def change_to_git_root():
     """ Changes current working directory to the root of the git repository on the working dir """
-    git_root_dir = Popen(["git", "rev-parse", "--show-toplevel"], stdout=PIPE)
-    os.chdir(git_root_dir.stdout.read()[:-1]) # Remove the last \n character
+    git_root_dir = Popen(["git", "rev-parse", "--show-toplevel"],
+                         stdout=PIPE, stderr=STDOUT)
+    output = git_root_dir.stdout.read()[:-1]
+
+    if str(output).startswith("fatal:"):
+        print "Stagediff: Not a valid git repository"
+        sys.exit()
+
+    os.chdir(output) # Remove the last \n character
 
 def process_args():
     """ Validates number of args and uses the first arg to change directories """
@@ -44,6 +53,11 @@ def process_args():
         change_to_git_root()
     elif args[1] == '-h':
         show_help()
+    elif args[1] == '-v':
+        print ""
+        print "Stagediff version "+VERSION+", "+VERSION_DATE
+        print ""
+        sys.exit()
     else:
         # Changes this script's working directory to the one in the first argument
         change_dir(str(args[1]))
@@ -52,9 +66,11 @@ def show_help():
     """ Prints help text """
     print ""
     print "Stagediff - Git utility to diff-add/revert-commit faster"
+    print "Version "+VERSION+", "+VERSION_DATE
     print ""
     print "Examples: "
     print "  stagediff -h               # Shows this help"
+    print "  stagediff -v               # Shows version information"
     print "  stagediff                  # Will run stagediff on current git repository"
     print "  stagediff /home/user/proj  # Will run stagediff on specified git repository"
     print ""
