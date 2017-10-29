@@ -9,14 +9,20 @@ Git utility to diff-add-commit faster
 don't forget --recursive flag to pull the submodule.
 
 ### Description
-stagediff will list all your git commited files that have modifications not staged for commit yet.
+stagediff makes basic and most used git features as easy and fast as possible.
+- Lists all the files that have modifications or are not added to the repo while allowing you to navigate the list with arrow keys  
+- Run the diff tool on the selected file
+- Revert changes on the selected file  
+- Mark files to stage
+- Write your commit message and commit.
 
-It let's you review the changes using difftool, select files for staging and commit them.
+It relies on external applications, "git d" configured to a diff tool and your configured text editor for "git commit" command.
+
 
 ### Requirements:
 * Python2.7
 * "git d" aliased to difftool.
-* Linux (don't know/care if this works on windows).
+* Linux (haven't tested on other platforms).
 
 ### difftool
 I like to use vimdiff as my difftool. 
