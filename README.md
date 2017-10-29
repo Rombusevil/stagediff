@@ -1,5 +1,5 @@
 # stagediff
-Git utility to diff-add-commit faster
+Git utility to diff-add/revert-commit faster
 
 ![alt tag](https://github.com/Rombusevil/gg/blob/master/docs/gg_screenshot.png)
 
