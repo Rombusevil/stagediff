@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__author__ = 'Iber Parodi Siri'
-
 """
     This file is part of stagediff.
 
@@ -18,80 +16,114 @@ __author__ = 'Iber Parodi Siri'
     You should have received a copy of the GNU General Public License
     along with stagediff.  If not, see <http://www.gnu.org/licenses/>.
 """
-import sys, os
-from picker.picker import *
+import sys
+import os
 from subprocess import Popen, PIPE
+from picker.picker import *
 
-args = sys.argv
-if len(args) is not 2:
-    print("")
-    print("Supply path of git project")
-    print("Examples: ")
-    print("  stagediff .")
-    print("  stagediff /home/user/proj")
-    print("")
+__author__ = 'Iber Parodi Siri'
+
+
+def change_dir(path):
+    """ Changes current working directory to the specified """
+    if path is not '.':
+        os.chdir(path)
+    else:
+        os.getcwd()
+
+def process_args():
+    """ Validates number of args and uses the first arg to change directories """
+    args = sys.argv
+    if len(args) is not 2:
+        show_help()
+    else:
+        # Changes this script's working directory to the one in the first argument
+        change_dir(str(args[1]))
+
+def show_help():
+    """ Prints help text """
+    print ""
+    print "Supply path of git project"
+    print "Examples: "
+    print "  stagediff ."
+    print "  stagediff /home/user/proj"
+    print ""
     sys.exit()
 
-# Changes this script's working directory to the one in the first argument
-path = str(args[1])
-if path is not '.':
-    os.chdir(path)
-else:
-    os.getcwd()
+def get_git_status():
+    """ returns a list with the 'git status --porcelain' output """
+    gitstatus = Popen(["git", "status", "--porcelain"], stdout=PIPE)
 
-# Run the command that prints the list of commited files that are modified:
-#       git status --porcelain | grep " M" | cut -d" " -f3
-gitSts  = Popen(["git", "status", "--porcelain"], stdout =PIPE)
-pending = Popen(["grep"," M"], stdin =gitSts.stdout, stdout=PIPE)
-pending = Popen(["cut", "-d", " ", "-f3"], stdin =pending.stdout, stdout=PIPE)
+    # Create a list with the output of the command
+    return gitstatus.stdout.read().splitlines()
 
-# Create a list with the output of the command
-list = pending.stdout.read().splitlines()
+def start_running():
+    """ Main function """
+    files = get_git_status()
 
-if list:
-    selectedItems = None
-    cursorPos = 0
+    if files:
+        selected_items = None
+        cursor_pos = 0
 
-    running = True
-    while running:
-        # This is blocking, launch the curses interface
-        p = Picker( title = 'Modified files',
-                    footer="Right arrow = show diff, Space = stage for commit, Enter = commit, q = quit",
-                    options= list,
-                    options_selected = selectedItems,
-                    cursor_pos = cursorPos)
-        opts = p.getSelected()
+        running = True
+        while running:
+            # This is blocking, launch the curses interface
+            picker = Picker(title='Git status',
+                            footer="'->' diff, '<-' revert, 'space' stage, "
+                            +"'enter' commit, 'q' quit",
+                            options=files,
+                            options_selected=selected_items,
+                            cursor_pos=cursor_pos)
+            opts = picker.getSelected()
 
-        if opts is not False:
-            selectedItems = opts["checked"] # Store the list of checked items
+            if opts is not False:
+                selected_items = opts["checked"] # Store the list of checked items
 
-            # RIGHT Key pressed, lauch git diff then
-            if opts["diff"] is not None:
-                cursorPos = opts["diff"] # Store cursor pos to restore
-                fileToDiff = list[opts["diff"]]
+                if opts["highlighted"] is not None:
+                    cursor_pos = opts["highlighted"] # Store cursor pos to restore
+                    raw_line = files[opts["highlighted"]]
+                    is_modified = raw_line[0:2] == ' M'
+                    is_untracked = raw_line[0:2] == '??'
+                    highlighted_file = raw_line[3:].split(" ")[0]
 
-                # This is blocking, launch vimdiff
-                # I'm using git d for using vimdiff as a difftool
-                diff = Popen(["git d "+str(fileToDiff)], shell=True)
-                diff.wait()
+                    # LEFT key pressed, reverting highlighted file
+                    if opts["revert"] is True and not is_untracked:
+                        print "REVERTING..."
+                        confirm = raw_input("Revert all changes to "
+                                            +str(highlighted_file)+"? [y/n]")
+                        if confirm == 'y':
+                            cmd = Popen(["git checkout -- "+str(highlighted_file)], shell=True)
+                            cmd.wait()
 
-            # ENTER Key pressed
-            else:
-                if opts["checked"]:
-                    files = ' '.join(opts["checked"])
+                    # RIGHT Key pressed, lauch git diff then (only if the file to diff was modified)
+                    elif is_modified:
+                        # This is blocking, launch confiured diff tool
+                        # I'm using git d for using vimdiff as a difftool
+                        diff = Popen(["git d "+str(highlighted_file)], shell=True)
+                        diff.wait()
 
-                    # stage selected files to commit
-                    add = Popen(["git add "+files], shell=True)
-                    add.wait()
+                # ENTER Key pressed
+                elif opts["checked"]:
+                    if opts["commit"] is True:
+                        files = ' '.join([e[3:] for e in opts["checked"]])
 
-                    # commit changes
-                    commit = Popen(["git commit "], shell=True)
-                    commit.wait()
+                        # stage selected files to commit
+                        add = Popen(["git add "+files], shell=True)
+                        add.wait()
+
+                        # commit changes
+                        commit = Popen(["git commit "], shell=True)
+                        commit.wait()
+                        running = False
                 else:
-                    print("Nothing to do here ...")
+                    print "Nothing to do here ..."
+            else:
+                # Q was pressed, so we quit
                 running = False
-        else:
-            # Q was presses, so we quit
-            running = False
-else:
-    print("Nothing to do here ...")
+    else:
+        print "Nothing to do here ..."
+
+
+
+process_args()
+start_running()
