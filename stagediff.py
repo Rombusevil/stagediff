@@ -31,10 +31,18 @@ def change_dir(path):
     else:
         os.getcwd()
 
+def change_to_git_root():
+    """ Changes current working directory to the root of the git repository on the working dir """
+    git_root_dir = Popen(["git", "rev-parse", "--show-toplevel"], stdout=PIPE)
+    os.chdir(git_root_dir.stdout.read()[:-1]) # Remove the last \n character
+
 def process_args():
     """ Validates number of args and uses the first arg to change directories """
     args = sys.argv
     if len(args) is not 2:
+        #show_help()
+        change_to_git_root()
+    elif args[1] == '-h':
         show_help()
     else:
         # Changes this script's working directory to the one in the first argument
@@ -43,10 +51,12 @@ def process_args():
 def show_help():
     """ Prints help text """
     print ""
-    print "Supply path of git project"
+    print "Stagediff - Git utility to diff-add/revert-commit faster"
+    print ""
     print "Examples: "
-    print "  stagediff ."
-    print "  stagediff /home/user/proj"
+    print "  stagediff -h               # Shows this help"
+    print "  stagediff                  # Will run stagediff on current git repository"
+    print "  stagediff /home/user/proj  # Will run stagediff on specified git repository"
     print ""
     sys.exit()
 
