@@ -120,6 +120,10 @@ def start_running():
                         if confirm == 'y':
                             cmd = Popen(["git checkout -- "+str(highlighted_file)], shell=True)
                             cmd.wait()
+                            cursor_pos = 0
+                            files = get_git_status() # Reload changes
+                            if not files:
+                                running = False
 
                     # RIGHT Key pressed, lauch git diff then (only if the file to diff was modified)
                     elif is_modified:
