@@ -3,6 +3,13 @@ Git utility to diff-add/revert-commit faster
 
 ![alt tag](https://github.com/Rombusevil/gg/blob/master/docs/gg_screenshot.png)
 
+### Installation as a system app
+```shell
+git clone https://github.com/Rombusevil/stagediff.git --recursive  
+cd stagediff  
+sudo ln -s $(pwd)/stagediff.py /usr/local/bin/stagediff
+```
+
 ### Clone repo
 `git clone https://github.com/Rombusevil/stagediff.git --recursive`
 
