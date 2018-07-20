@@ -9,11 +9,13 @@ git clone https://github.com/Rombusevil/stagediff.git --recursive
 cd stagediff  
 sudo ln -s $(pwd)/stagediff.py /usr/local/bin/stagediff
 ```
+Don't forget to configure the diff tool!   
+Check the **difftool** section at the bottom.
 
 ### Clone repo
 `git clone https://github.com/Rombusevil/stagediff.git --recursive`
 
-don't forget --recursive flag to pull the submodule.
+Don't forget --recursive flag to pull the submodule.
 
 ### Description
 stagediff makes basic and most used git features as easy and fast as possible.
